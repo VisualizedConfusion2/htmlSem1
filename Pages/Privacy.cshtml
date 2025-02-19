@@ -1,0 +1,82 @@
+﻿@page
+@model PrivacyModel
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<style>
+    body {
+        font-family: monospace;
+        overflow: hidden;
+    }
+
+    #game {
+        white-space: pre;
+        line-height: 1.5;
+    }
+</style>
+<h1>T-Rex Runner</h1>
+<div id="game"></div>
+<script>
+    let isJumping = false;
+            let trexPosition = 10;
+            const groundLevel = 10;
+            let obstaclePosition = 40;
+            let score = 0;
+            let gameRunning = true;
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowUp' && !isJumping) {
+                    isJumping = true;
+                }
+            });
+
+            function update() {
+                if (isJumping) {
+                    trexPosition = 5;
+                } else {
+                    trexPosition = groundLevel;
+                }
+
+                if (isJumping) {
+                    setTimeout(() => { isJumping = false; }, 300);
+                }
+
+                obstaclePosition--;
+                if (obstaclePosition < 0) {
+                    obstaclePosition = 40;
+                    score += 10;
+                }
+
+                if (obstaclePosition === 5 && trexPosition === groundLevel) {
+                    gameRunning = false;
+                }
+            }
+
+            function draw() {
+                let output = `Score: ${score}\n`;
+
+                // Draw T-Rex
+                for (let i = 0; i < trexPosition; i++) output += "\n";
+                output += "    T\n";
+
+                // Draw Obstacle
+                for (let i = trexPosition + 1; i < groundLevel; i++) output += "\n";
+                output += "".padEnd(obstaclePosition, ' ') + "#\n";
+
+                // Draw Ground
+                output += "-".repeat(50);
+
+                document.getElementById('game').textContent = output;
+            }
+
+            function gameLoop() {
+                if (!gameRunning) {
+                    document.getElementById('game').textContent += "\nGame Over! Your score: " + score + "\nRefresh to play again.";
+                    return;
+                }
+                update();
+                draw();
+                setTimeout(gameLoop, 100);
+            }
+
+            gameLoop();</script>
